@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.prime.com.tr/ui">
+
+    <h:head>
+		<title>Jamon</title>
+    </h:head>
+    <h:body>
+        <h:form>
+			<h:messages/>
+			<p:tabView dynamic="true" cache="true">
+				<p:tab title="Summary">
+					<h:panelGrid columns="2">
+						<h:outputText value="Processors : "/>
+						<h:outputText value="#{summaryCtrl.availableProcessors}"/>
+						<h:outputText value="Free Memory : "/>
+						<h:outputText value="#{summaryCtrl.freeMemory}"/>
+						<h:outputText value="Total Memory : "/>
+						<h:outputText value="#{summaryCtrl.totalMemory}"/>
+						<h:outputText value="Max Memory : "/>
+						<h:outputText value="#{summaryCtrl.maxMemory}"/>
+					</h:panelGrid>
+				</p:tab>
+				<p:tab title="Logs (live)"></p:tab>
+				<p:tab title="Logs (from file)"></p:tab>
+				<p:tab title="Levels">
+					<h:form>
+						<p:dataTable
+							id="logLevelTable"
+							value="#{logLevelCtrl.loggers}"
+							var="logger"
+							paginator="true"
+							rows="20"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							paginatorPosition="bottom"
+							rowsPerPageTemplate="10,20,50">
+							<p:column headerText="Name" sortBy="#{logger.name}" filterBy="#{logger.name}" filterMatchMode="contains">
+								<h:outputText value="#{logger.name}">
+									<f:converter converterId="loggerNameConverter" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Level" sortBy="#{logger.level}" filterBy="#{logger.level}" filterMatchMode="contains">
+								<h:selectOneMenu value="#{logger.level}">
+									<f:selectItems value="#{appCtrl.levels}"/>
+									<p:ajax event="change" process="@form" update="@form"/>
+								</h:selectOneMenu>
+								<h:outputText value="( #{logger.effectiveLevel} )" style="margin-left: 10px;"/>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:tab>
+				<p:tab title="Emails">
+					<h:form>
+						<h:panelGrid columns="2">
+							<h:outputLabel for="smtpServer" value="SMTP server"/>
+							<h:inputText id="smtpServer" disabled="true" value="#{appCtrl.jamon.smtpServer}" style="width: 200px"/>
+							<h:outputLabel for="emailRecipient" value="Logs email recipient"/>
+							<h:inputText id="emailRecipient" disabled="true" value="#{appCtrl.jamon.emailRecipient}" style="width: 200px"/>
+							<h:outputLabel for="level" value="Level"/>
+							<h:selectOneMenu id="level" disabled="true" value="#{appCtrl.jamon.level}">
+								<f:selectItems value="#{appCtrl.levels}"/>
+							</h:selectOneMenu>
+							<p:commandButton action="#{appCtrl.reset()}" value="Reset" process="@form" update="@form"/><br/>
+							<p:commandButton action="#{appCtrl.testError()}" value="Test error" process="@form" update="@form"/><br/>
+							<p:commandButton action="#{appCtrl.testInfo()}" value="Test info" process="@form" update="@form"/><br/>
+							<p:commandButton action="#{appCtrl.testDebug()}" value="Test debug" process="@form" update="@form"/><br/>
+						</h:panelGrid>
+					</h:form>
+				</p:tab>
+			</p:tabView>
+		</h:form>
+    </h:body>
+</html>
